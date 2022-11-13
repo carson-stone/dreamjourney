@@ -17,6 +17,10 @@ import EditorJS from '@editorjs/editorjs';
 const editorLoading = ref(true)
 const editor = ref<EditorJS | null>(null)
 
+const emit = defineEmits<{
+  (e: "save", data: Array<string>): void;
+}>()
+
 onMounted(() => {
   editor.value = new EditorJS({
     holderId: 'editorjs',
@@ -31,7 +35,8 @@ onMounted(() => {
 
 function save() {
   editor.value!.save().then((outputData) => {
-    console.log('Article data: ', outputData)
+    const textData = outputData.blocks.map(({ data }) => (data.text))
+    emit("save", textData)
   }).catch((error) => {
     console.log('Saving failed: ', error)
   });
